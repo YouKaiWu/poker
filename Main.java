@@ -17,6 +17,8 @@ public class Main {
         CardView cardView = new CardView(card);
         frame.add(cardView);
 
+        cardView.setCard(new Card(Card.Suit.CLUB, 2));
+
         // start
         frame.setVisible(true);
     }
