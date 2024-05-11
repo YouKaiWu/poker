@@ -20,4 +20,24 @@ public class Card implements Comparable<Card> {
         }
         return Integer.compare(this.face, card.face);
     }
+
+    @Override
+    public String toString() {
+        String str = Integer.toString(face);
+        switch (suit) {
+            case SPADE:
+                str += "S";
+                break;
+            case HEART:
+                str += "H";
+                break;
+            case DIAMOND:
+                str += "D";
+                break;
+            case CLUB:
+                str += "C";
+                break;
+        }
+        return str;
+    }
 }
