@@ -51,7 +51,7 @@ public class Server {
         Response res = Server.fetch("/api/login", "POST", body);
 
         if (res.getStatus() == 200) {
-            String token = res.get("token");
+            String token = res.getString("token");
             System.out.println("[Test] Login succeed");
             System.out.println("[Test] Token: " + token);
         } else {

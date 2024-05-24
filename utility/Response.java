@@ -23,7 +23,7 @@ public class Response {
         for (String item : items) {
             String[] data = item.split(":");
             String key = data[0].substring(1, data[0].length() - 1);
-            String val = data[1].substring(1, data[1].length() - 1);
+            String val = data[1];
             fields.put(key, val);
         }
     }
@@ -34,6 +34,16 @@ public class Response {
 
     public String get(String key) {
         return fields.get(key);
+    }
+
+    public String getString(String key) {
+        String val = fields.get(key);
+        return val.substring(1, val.length() - 1);
+    }
+    
+    public int getInt(String key) {
+        String val = fields.get(key);
+        return Integer.parseInt(val);
     }
 
     public int getStatus() {

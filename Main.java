@@ -16,7 +16,7 @@ public class Main {
             return;
         }
 
-        token = res.get("token");
+        token = res.getString("token");
     }
 
     public static void main(String[] args) {
