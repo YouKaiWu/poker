@@ -4,9 +4,13 @@ import javax.swing.*;
 import java.awt.*;
 
 import models.Button;
+import utility.*;
 
 public class LoginView extends JPanel {
-    public LoginView(MainView mainView) {
+    MainView context;
+    JFrame frame;
+
+    public LoginView(MainView mainView, JFrame frame) {
         // 設置布局
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -67,7 +71,14 @@ public class LoginView extends JPanel {
         // 登入按鈕
         JButton loginButton = new Button("Login", "normal");
         loginButton.addActionListener(e -> {
-            mainView.switchPanel("lobby");
+            String acc = usernameField.getText();
+            String pass = new String(passwordField.getPassword());
+            if (login(acc, pass)) {
+                mainView.switchPanel("lobby");
+            } else {
+                String msg = "Login failed. Please check your username and password.";
+                JOptionPane.showMessageDialog(frame, msg, "Login Failed", JOptionPane.ERROR_MESSAGE);
+            }
         });
         buttonContainer.add(loginButton);
 
@@ -84,5 +95,11 @@ public class LoginView extends JPanel {
         gbc.insets = new Insets(20, 10, 30, 10);
         gbc.anchor = GridBagConstraints.CENTER;
         add(buttonContainer, gbc);
+
+        context = mainView;
+    }
+
+    boolean login(String account, String password) {
+        return context.client.login(account, password);
     }
 }

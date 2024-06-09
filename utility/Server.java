@@ -4,7 +4,7 @@ import java.io.*;
 import java.net.*;
 
 public class Server {
-    private static String url = "http://k8s-gpu.tail0ab30.ts.net:3000";
+    private static String url = "http://localhost:3000";
 
     public static Response fetch(String path, String method, String body) {
         return Server.fetch(path, method, "", body);
