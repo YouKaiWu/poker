@@ -4,7 +4,6 @@ import javax.swing.*;
 import java.awt.*;
 
 import models.*;
-import models.Button;
 
 public class LobbyView extends JPanel {
     public LobbyView(MainView mainView) {
@@ -18,14 +17,12 @@ public class LobbyView extends JPanel {
 
         // 登出按钮
         JButton logoutButton = new Button("logout", "logout");
-        
         topPanel.add(logoutButton, BorderLayout.EAST); // 将登出按钮放在右上角
 
         logoutButton.addActionListener(e -> {
             mainView.switchPanel("login");
         });
         // 添加hover效果
-        
 
         // 中心面板用于放置其余组件
         JPanel centerPanel = new JPanel(new GridBagLayout());
@@ -40,23 +37,31 @@ public class LobbyView extends JPanel {
 
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.insets = new Insets(20, 0, 20, 0);  // 设置上下间距
+        gbc.insets = new Insets(20, 0, 20, 0); // 设置上下间距
         gbc.anchor = GridBagConstraints.CENTER;
         centerPanel.add(cv, gbc);
 
         // 主選單按鈕
-        JButton findRoomButton = new Button("Search Room", "normal");
+        JButton joinRoomButton = new Button("Join Room", "normal");
+        joinRoomButton.addActionListener(e -> {
+            // TODO: Show all rooms
+        });
+
         JButton createRoomButton = new Button("Create Room", "normal");
+        createRoomButton.addActionListener(e -> {
+            // TODO: Create room
+        });
+
         JButton gameInstructionsButton = new Button("Game Instructions", "normal");
 
         // 設置按鈕佈局
-        gbc.insets = new Insets(10, 0, 10, 0);  // 设置按钮间距
+        gbc.insets = new Insets(10, 0, 10, 0); // 设置按钮间距
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.gridx = 0;
 
         gbc.gridy = 1;
-        centerPanel.add(findRoomButton, gbc);
+        centerPanel.add(joinRoomButton, gbc);
 
         gbc.gridy = 2;
         centerPanel.add(createRoomButton, gbc);

@@ -3,11 +3,9 @@ package views;
 import javax.swing.*;
 import java.awt.*;
 
-import models.Button;
-
 public class RegisterView extends JPanel {
 
-    public RegisterView(MainView mainView, JFrame frame) {
+    public RegisterView(MainView mainView) {
         // 設置布局
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -107,13 +105,13 @@ public class RegisterView extends JPanel {
 
             if (!password.equals(confirm)) {
                 String msg = "Please confirm the password.";
-                JOptionPane.showMessageDialog(frame, msg, "Confirm the password", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(mainView.frame, msg, "Confirm the password", JOptionPane.ERROR_MESSAGE);
             } else {
                 if (mainView.client.register(account, name, password)) {
                     mainView.switchPanel("login");
                 } else {
                     String msg = "Failed to register.";
-                    JOptionPane.showMessageDialog(frame, msg, "Register Failed", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(mainView.frame, msg, "Register Failed", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });

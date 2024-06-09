@@ -3,13 +3,10 @@ package views;
 import javax.swing.*;
 import java.awt.*;
 
-import models.Button;
-
 public class LoginView extends JPanel {
     MainView context;
-    JFrame frame;
 
-    public LoginView(MainView mainView, JFrame frame) {
+    public LoginView(MainView mainView) {
         // 設置布局
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -76,7 +73,7 @@ public class LoginView extends JPanel {
                 mainView.switchPanel("lobby");
             } else {
                 String msg = "Login failed. Please check your username and password.";
-                JOptionPane.showMessageDialog(frame, msg, "Login Failed", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(mainView.frame, msg, "Login Failed", JOptionPane.ERROR_MESSAGE);
             }
         });
         buttonContainer.add(loginButton);
