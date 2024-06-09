@@ -7,7 +7,7 @@ import models.Button;
 
 public class RegisterView extends JPanel {
 
-    public RegisterView(MainView mainView) {
+    public RegisterView(MainView mainView, JFrame frame) {
         // 設置布局
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -100,7 +100,22 @@ public class RegisterView extends JPanel {
         // 確定註冊按鈕
         JButton confirmButton = new Button("Confirm", "normal");
         confirmButton.addActionListener(e -> {
-            mainView.switchPanel("login");
+            String name = nameField.getText();
+            String account = usernameField.getText();
+            String password = new String(passwordField.getPassword());
+            String confirm = new String(confirmPasswordField.getPassword());
+
+            if (!password.equals(confirm)) {
+                String msg = "Please confirm the password.";
+                JOptionPane.showMessageDialog(frame, msg, "Confirm the password", JOptionPane.ERROR_MESSAGE);
+            } else {
+                if (mainView.client.register(account, name, password)) {
+                    mainView.switchPanel("login");
+                } else {
+                    String msg = "Failed to register.";
+                    JOptionPane.showMessageDialog(frame, msg, "Register Failed", JOptionPane.ERROR_MESSAGE);
+                }
+            }
         });
         buttonContainer.add(confirmButton);
 

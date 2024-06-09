@@ -4,7 +4,6 @@ import javax.swing.*;
 import java.awt.*;
 
 import models.Button;
-import utility.*;
 
 public class LoginView extends JPanel {
     MainView context;

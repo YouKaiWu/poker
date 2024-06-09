@@ -19,7 +19,7 @@ public class MainView extends JPanel {
         JPanel lobby = new LobbyView(this);
         this.add(lobby, "lobby");
 
-        JPanel register = new RegisterView(this);
+        JPanel register = new RegisterView(this, frame);
         this.add(register, "register");
     }
 
