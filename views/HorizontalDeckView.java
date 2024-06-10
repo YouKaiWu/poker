@@ -14,7 +14,7 @@ public class HorizontalDeckView extends JPanel {
     public Image toImage(Card card) {
         String path = "./images/card-face/" + card.toString() + ".png";
         ImageIcon originalIcon = new ImageIcon(path);
-        Image image = originalIcon.getImage().getScaledInstance(80, -1, Image.SCALE_SMOOTH);
+        Image image = originalIcon.getImage().getScaledInstance(75, 105, Image.SCALE_SMOOTH);
         return image;
     }
 
@@ -26,5 +26,7 @@ public class HorizontalDeckView extends JPanel {
             JLabel cardImg = new JLabel(imageIcon);
             this.add(cardImg);
         }
+        this.revalidate();
+        this.repaint();
     }
 }

@@ -1,7 +1,6 @@
 package views;
 
 import java.awt.CardLayout;
-
 import javax.swing.*;
 
 import utility.*;
@@ -23,6 +22,9 @@ public class MainView extends JPanel {
 
         JPanel register = new RegisterView(this);
         this.add(register, "register");
+
+        JPanel game = new GameView(this);
+        this.add(game, "game");
     }
 
     public void switchPanel(String panelName) {
