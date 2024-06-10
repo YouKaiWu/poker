@@ -44,12 +44,18 @@ public class LobbyView extends JPanel {
         // 主選單按鈕
         JButton joinRoomButton = new Button("Join Room", "normal");
         joinRoomButton.addActionListener(e -> {
-            // TODO: Show all rooms
+            RoomSelectionDialog dialog = new RoomSelectionDialog(mainView.frame, mainView.client);
+            dialog.setVisible(true);
+            String selectedRoom = dialog.getSelectedRoom();
+            if (selectedRoom != null) {
+                // TODO: To Game View
+            }
         });
 
         JButton createRoomButton = new Button("Create Room", "normal");
         createRoomButton.addActionListener(e -> {
-            // TODO: Create room
+            String roomID = mainView.client.createRoom();
+            System.out.println("[Info] room id: " + roomID);
         });
 
         JButton gameInstructionsButton = new Button("Game Instructions", "normal");

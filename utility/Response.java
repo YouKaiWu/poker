@@ -2,6 +2,7 @@ package utility;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class Response {
     int status;
@@ -36,11 +37,15 @@ public class Response {
         return fields.get(key);
     }
 
+    public Set<String> getKeys() {
+        return fields.keySet();
+    }
+
     public String getString(String key) {
         String val = fields.get(key);
         return val.substring(1, val.length() - 1);
     }
-    
+
     public int getInt(String key) {
         String val = fields.get(key);
         return Integer.parseInt(val);
