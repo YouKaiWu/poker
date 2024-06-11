@@ -4,7 +4,9 @@ import java.util.*;
 import models.*;
 
 public class Client {
-    private static String token = "";
+    private String token = "";
+    public String roomID = "";
+    public boolean gameStart = false;
 
     public boolean login(String account, String password) {
         String format = "{\"account\": \"%s\",\"password\": \"%s\"}";
@@ -50,7 +52,7 @@ public class Client {
         List<Room> rooms = new ArrayList<>();
 
         for (String id : ids) {
-            Room room = new Room(id, res.getString(id));
+            Room room = new Room(id, res.getInt(id));
             rooms.add(room);
         }
         return rooms;

@@ -48,14 +48,17 @@ public class LobbyView extends JPanel {
             dialog.setVisible(true);
             String selectedRoom = dialog.getSelectedRoom();
             if (selectedRoom != null) {
-                // TODO: To Game View
+                mainView.client.roomID = selectedRoom;
+                mainView.client.gameStart = false;
+                mainView.switchPanel("game");
             }
         });
 
         JButton createRoomButton = new Button("Create Room", "normal");
         createRoomButton.addActionListener(e -> {
             String roomID = mainView.client.createRoom();
-            System.out.println("[Info] room id: " + roomID);
+            mainView.client.roomID = roomID;
+            mainView.client.gameStart = false;
             mainView.switchPanel("game");
         });
 
