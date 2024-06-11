@@ -33,6 +33,7 @@ public class GameView extends JPanel {
     private Session session;
     public String roomID = "";
     public boolean started = false;
+    public int playerNumber;
 
     public GameView(MainView mainView) {
         this.setLayout(new BorderLayout());
@@ -254,7 +255,18 @@ public class GameView extends JPanel {
 
     @OnMessage
     public void onMessage(String message) {
-        System.out.println("Received from server: \n\t" + message);
+        String[] tokens = message.split(":");
+        switch (tokens[0]) {
+            case "num": {
+                playerNumber = Integer.parseInt(tokens[1]);
+                break;
+            }
+
+            case "action": {
+                String action = tokens[1];
+                System.out.println("Player: " + action);
+            }
+        }
     }
 
     @OnClose
