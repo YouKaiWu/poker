@@ -61,7 +61,10 @@ public class LobbyView extends JPanel {
         });
 
         JButton gameInstructionsButton = new Button("Game Instructions", "normal");
-
+        gameInstructionsButton.addActionListener(e -> {
+            InstructionsDialog dialog = new InstructionsDialog(mainView.frame);
+            dialog.setVisible(true);
+        });
         // 設置按鈕佈局
         gbc.insets = new Insets(10, 0, 10, 0); // 设置按钮间距
         gbc.fill = GridBagConstraints.HORIZONTAL;
