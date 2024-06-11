@@ -56,6 +56,7 @@ public class LobbyView extends JPanel {
         createRoomButton.addActionListener(e -> {
             String roomID = mainView.client.createRoom();
             System.out.println("[Info] room id: " + roomID);
+            mainView.switchPanel("game");
         });
 
         JButton gameInstructionsButton = new Button("Game Instructions", "normal");

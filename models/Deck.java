@@ -6,13 +6,17 @@ import java.util.Iterator;
 public class Deck implements Iterable<Card> {
     private ArrayList<Card> cards;
 
+    public Deck() {
+        this.cards = new ArrayList<>();
+    }
+
     public Deck(Iterable<Card> cards) {
         this.cards = new ArrayList<>();
         for (Card card : cards) {
             this.cards.add(card);
         }
     }
-    
+
     public Deck(Card[] cards) {
         this.cards = new ArrayList<>();
         for (Card card : cards) {
