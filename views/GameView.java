@@ -1,6 +1,10 @@
 package views;
 
+
+import java.util.*;
+import java.util.List;
 import javax.swing.*;
+import javax.swing.border.EtchedBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,239 +17,116 @@ import models.*;
 
 @ClientEndpoint
 public class GameView extends JPanel {
-    private HorizontalDeckView playerHandCenter;
-    private HorizontalDeckView playerHandLeft;
-    private HorizontalDeckView playerHandRight;
-    private HorizontalDeckView communityCards;
-    private JLabel playerNameCenter;
-    private JLabel playerNameLeft;
-    private JLabel playerNameRight;
-    private JLabel playerChipsCenter;
-    private JLabel playerChipsLeft;
-    private JLabel playerChipsRight;
-    private JLabel potLabel;
-    private JButton raiseButton;
-    private JButton checkButton;
-    private JButton foldButton;
-    private JButton dealButton;
-    private int pot;
-
+    private HorizontalDeckView communityCardsView;
+    private PlayerInfoView PlayerInfoView;
+    private JLabel currentBetLabel;
+    private JLabel currentPlayerLabel;
+    
     private Session session;
     public String roomID = "";
     public boolean started = false;
     public int playerNumber;
 
-    public GameView(MainView mainView) {
-        this.setLayout(new BorderLayout());
-
-        // 設置桌面背景
-        JLabel background = new JLabel(new ImageIcon("./images/Table.png"));
-        this.add(background);
-        background.setLayout(new BorderLayout());
-
-        // 初始化撲克牌展示區域
-        JPanel cardPanel = new JPanel(new GridBagLayout());
-        cardPanel.setOpaque(false);
-        background.add(cardPanel, BorderLayout.CENTER);
+    public GameView(MainView mainView, Deck communityCardsDeck, Player[] players) {
+        Color backGroundColor = new Color(34, 139, 34);
+        this.setBackground(backGroundColor);
+        setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);
-
-        playerHandCenter = new HorizontalDeckView(new Deck());
-        gbc.gridx = 1;
-        gbc.gridy = 2;
-        cardPanel.add(playerHandCenter, gbc);
-
-        playerHandLeft = new HorizontalDeckView(new Deck());
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1.0;
+    
+        // 最上層新增一個panel
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.setBackground(backGroundColor);
+    
+        JLabel currentRoomLabel = new JLabel("Room NO.1");
+        currentRoomLabel.setFont(new Font("Comic Sans MS", Font.PLAIN, 20));
+        currentRoomLabel.setForeground(Color.WHITE);
+        currentRoomLabel.setHorizontalAlignment(JLabel.CENTER);
+        topPanel.add(currentRoomLabel, BorderLayout.CENTER);
+    
+        JButton quitButton = new Button("Quit", "logout");
+        topPanel.add(quitButton, BorderLayout.EAST);
+    
         gbc.gridx = 0;
-        gbc.gridy = 1;
-        cardPanel.add(playerHandLeft, gbc);
-
-        playerHandRight = new HorizontalDeckView(new Deck());
-        gbc.gridx = 2;
-        gbc.gridy = 1;
-        cardPanel.add(playerHandRight, gbc);
-
-        communityCards = new HorizontalDeckView(new Deck());
-        gbc.gridx = 1;
-        gbc.gridy = 1;
-        cardPanel.add(communityCards, gbc);
-
-        // 添加玩家信息
-        playerNameCenter = new JLabel("Player Center");
-        gbc.gridx = 1;
-        gbc.gridy = 3;
-        cardPanel.add(playerNameCenter, gbc);
-
-        playerNameLeft = new JLabel("Player Left");
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        cardPanel.add(playerNameLeft, gbc);
-
-        playerNameRight = new JLabel("Player Right");
-        gbc.gridx = 2;
-        gbc.gridy = 2;
-        cardPanel.add(playerNameRight, gbc);
-
-        playerChipsCenter = new JLabel("Chips: 1000");
-        gbc.gridx = 1;
-        gbc.gridy = 4;
-        cardPanel.add(playerChipsCenter, gbc);
-
-        playerChipsLeft = new JLabel("Chips: 1000");
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        cardPanel.add(playerChipsLeft, gbc);
-
-        playerChipsRight = new JLabel("Chips: 1000");
-        gbc.gridx = 2;
-        gbc.gridy = 3;
-        cardPanel.add(playerChipsRight, gbc);
-
-        pot = 0;
-        potLabel = new JLabel("Pot: " + pot);
-        gbc.gridx = 1;
         gbc.gridy = 0;
-        cardPanel.add(potLabel, gbc);
-
-        // 按鈕設置
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setOpaque(false);
-        background.add(buttonPanel, BorderLayout.EAST);
-        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
-
-        raiseButton = new Button("Raise", "normal");
-        checkButton = new Button("Check", "normal");
-        foldButton = new Button("Fold", "normal");
-
-        buttonPanel.add(raiseButton);
-        buttonPanel.add(checkButton);
-        buttonPanel.add(foldButton);
-
-        // 發牌按鈕
-        dealButton = new Button("Deal", "normal");
-        buttonPanel.add(dealButton);
-
-        // 添加按鈕事件
-        dealButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dealCards();
-            }
-        });
-
-        raiseButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                handleRaise();
-            }
-        });
-
-        checkButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                handleCheck();
-            }
-        });
-
-        foldButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                handleFold();
-            }
-        });
-
-        String uri = "ws://localhost:8080";
-        try {
-            ContainerProvider.getWebSocketContainer().connectToServer(this, new URI(uri));
-        } catch (Exception e) {
-            e.printStackTrace();
+        gbc.gridwidth = 5;
+        gbc.gridheight = 1;
+        gbc.weighty = 0.1;
+        add(topPanel, gbc);
+    
+        // 上方放置四位玩家
+        JPanel topPlayersPanel = new JPanel(new GridLayout(1, 4));
+        topPlayersPanel.setBackground(backGroundColor);
+        for (int i = 0; i < 4; i++) {
+            topPlayersPanel.add(new PlayerView(players[i]));
         }
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.gridwidth = 4;
+        gbc.gridheight = 1;
+        gbc.weighty = 0.1;
+        add(topPlayersPanel, gbc);
+    
+        // 公共牌區域視圖
+        JPanel communityPanel = new JPanel(new FlowLayout());
+        communityPanel.setBackground(backGroundColor);
+        communityCardsView = new HorizontalDeckView(communityCardsDeck);
+        communityPanel.add(communityCardsView);
+        
+        JPanel communityInfo = new JPanel(new GridLayout(2,1));
+        communityInfo.setBackground(backGroundColor);
+        
+        // 當前玩家
+        currentPlayerLabel = new JLabel("Current Player: ");
+        currentPlayerLabel.setFont(new Font("Comic Sans MS", Font.PLAIN, 14)); // 設置字體
+        currentPlayerLabel.setForeground(new Color(255, 215, 0)); // 設置文字顏色
+        currentPlayerLabel.setBackground(backGroundColor);
+        communityInfo.add(currentPlayerLabel);
+        
+        // 當前下注金額
+        currentBetLabel = new JLabel("Current Bet: ");
+        currentBetLabel.setFont(new Font("Comic Sans MS", Font.PLAIN, 14)); // 設置字體
+        currentBetLabel.setForeground(new Color(255, 165, 0)); // 設置文字顏色
+        currentBetLabel.setBackground(backGroundColor);
+        communityInfo.add(currentBetLabel);
+    
+        
+    
+        communityPanel.add(communityInfo);
+
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.gridwidth = 5;
+        gbc.gridheight = 2;
+        gbc.weighty = 0.2;
+        add(communityPanel, gbc);
+    
+        // 下方放置四位玩家
+        JPanel bottomPlayersPanel = new JPanel(new GridLayout(1, 4));
+        bottomPlayersPanel.setBackground(backGroundColor);
+        for (int i = 4; i < players.length; i++) {
+            bottomPlayersPanel.add(new PlayerView(players[i]));
+        }
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        gbc.gridwidth = 4;
+        gbc.gridheight = 1;
+        gbc.weighty = 0.1;
+        add(bottomPlayersPanel, gbc);
+    
+        // 放置控制區域視圖
+        PlayerInfoView = new PlayerInfoView(players[0]);
+        gbc.gridx = 0;
+        gbc.gridy = 5;
+        gbc.gridwidth = 4;
+        gbc.gridheight = 1;
+        gbc.weighty = 0.1;
+        add(PlayerInfoView, gbc);
     }
 
-    private void dealCards() {
-        // 模擬發牌
-        Deck playerDeckCenter = createPlayerDeck();
-        Deck playerDeckLeft = createPlayerDeck();
-        Deck playerDeckRight = createPlayerDeck();
-        Deck communityDeck = createSampleCommunityDeck();
+    
 
-        updatePlayerHandCenter(playerDeckCenter);
-        updatePlayerHandLeft(playerDeckLeft);
-        updatePlayerHandRight(playerDeckRight);
-        updateCommunityCards(communityDeck);
-    }
-
-    private Deck createPlayerDeck() {
-        // 創建樣例玩家撲克牌（兩張牌）
-        Deck deck = new Deck(new Card[] {
-                new Card(Card.Suit.SPADE, 2),
-                new Card(Card.Suit.HEART, 3)
-        });
-        return deck;
-    }
-
-    private Deck createSampleCommunityDeck() {
-        // 創建樣例公共撲克牌
-        Deck deck = new Deck(new Card[] {
-                new Card(Card.Suit.SPADE, 6),
-                new Card(Card.Suit.HEART, 7),
-                new Card(Card.Suit.DIAMOND, 8),
-                new Card(Card.Suit.CLUB, 9),
-                new Card(Card.Suit.SPADE, 10)
-        });
-        return deck;
-    }
-
-    public void updatePlayerHandCenter(Deck deck) {
-        playerHandCenter.update(deck);
-        playerHandCenter.revalidate();
-        playerHandCenter.repaint();
-    }
-
-    public void updatePlayerHandLeft(Deck deck) {
-        playerHandLeft.update(deck);
-        playerHandLeft.revalidate();
-        playerHandLeft.repaint();
-    }
-
-    public void updatePlayerHandRight(Deck deck) {
-        playerHandRight.update(deck);
-        playerHandRight.revalidate();
-        playerHandRight.repaint();
-    }
-
-    public void updateCommunityCards(Deck deck) {
-        communityCards.update(deck);
-        communityCards.revalidate();
-        communityCards.repaint();
-    }
-
-    private void handleRaise() {
-        String format = "{\"id\": \"%s\", \"type\":\"action\", \"action\": \"%s\"}";
-        String message = String.format(format, roomID, "raise");
-        send(message);
-
-        // 處理加注邏輯
-        JOptionPane.showMessageDialog(this, "Raise button clicked!");
-    }
-
-    private void handleCheck() {
-        String format = "{\"id\": \"%s\", \"type\":\"action\", \"action\": \"%s\"}";
-        String message = String.format(format, roomID, "check");
-        send(message);
-
-        // 處理過牌邏輯
-        JOptionPane.showMessageDialog(this, "Check button clicked!");
-    }
-
-    private void handleFold() {
-        String format = "{\"id\": \"%s\", \"type\":\"action\", \"action\": \"%s\"}";
-        String message = String.format(format, roomID, "fold");
-        send(message);
-
-        // 處理棄牌邏輯
-        JOptionPane.showMessageDialog(this, "Fold button clicked!");
-    }
 
     @OnOpen
     public void onOpen(Session session) {
@@ -291,5 +172,146 @@ public class GameView extends JPanel {
         roomID = id;
         String message = String.format("{\"id\": \"%s\", \"type\":\"join\"}", id);
         send(message);
+    }
+}
+
+
+class PlayerView extends JPanel {
+    private Player player;
+    private JLabel playerNameLabel;
+    private JLabel betLabel;
+    private JLabel chipsLabel;
+    private JLabel card1Label;
+    private JLabel card2Label;
+
+    public PlayerView(Player player) {
+        this.setBackground(new Color(34, 139, 34));
+        this.player = player;
+        setLayout(new BorderLayout());
+
+        playerNameLabel = new JLabel(player.getName());
+        JPanel playerInfoPanel = new JPanel(new GridLayout(2, 1)); // 使用 GridLayout 排列玩家資訊
+        playerInfoPanel.setBackground(new Color(34, 139, 34));
+        playerInfoPanel.add(playerNameLabel);
+        playerNameLabel.setFont(new Font("Comic Sans MS", Font.PLAIN, 14)); // 設置字體
+        playerNameLabel.setForeground(new Color(255, 215, 0)); 
+        // 顯示玩家下注金額和剩餘籌碼
+        betLabel = new JLabel("Bet: " + player.getCurrentBet());
+        betLabel.setFont(new Font("Comic Sans MS", Font.PLAIN, 14)); // 設置字體
+        betLabel.setForeground(new Color(255, 165, 0)); // 設置文字顏色為紅色
+        chipsLabel = new JLabel("Chips: " + player.getChips());
+        chipsLabel.setFont(new Font("Comic Sans MS", Font.PLAIN, 14)); // 設置字體
+        chipsLabel.setForeground(Color.LIGHT_GRAY); 
+
+        JPanel betChipsPanel = new JPanel(new GridLayout(1, 2)); // 使用 GridLayout 排列下注金額和籌碼
+        betChipsPanel.setBackground(new Color(34, 139, 34));
+        betChipsPanel.add(betLabel);
+        betChipsPanel.add(chipsLabel);
+        playerInfoPanel.add(betChipsPanel);
+
+        add(playerInfoPanel, BorderLayout.NORTH);
+
+        // 顯示玩家的卡片
+        JPanel cardsPanel = new JPanel(new FlowLayout());
+        cardsPanel.setBackground(new Color(34, 139, 34));
+        card1Label = new JLabel();
+        card2Label = new JLabel();
+        cardsPanel.add(card1Label);
+        cardsPanel.add(card2Label);
+        updateCards();
+        add(cardsPanel, BorderLayout.CENTER);
+    }
+
+    public void updateCards() {
+        List<Card> hand = player.getHand();
+        card1Label.setIcon(new ImageIcon(toImage(hand.get(0))));
+        card2Label.setIcon(new ImageIcon(toImage(hand.get(1))));
+    }
+
+    private Image toImage(Card card) {
+        String path = "./images/card-face/" + card.toString() + ".png";
+        ImageIcon originalIcon = new ImageIcon(path);
+        Image image = originalIcon.getImage().getScaledInstance(75, 105, Image.SCALE_SMOOTH);
+        return image;
+    }
+}
+
+class PlayerInfoView extends JPanel {
+    private Button foldButton;
+    private Button callButton;
+    private Button raiseButton;
+    private JTextField raiseAmountField;
+
+    public PlayerInfoView(Player player) {
+        setBackground(new Color(144, 238, 144));
+        setLayout(new GridBagLayout());
+        // 添加 EtchedBorder
+        setBorder(BorderFactory.createEtchedBorder(EtchedBorder.RAISED));
+        GridBagConstraints gbc = new GridBagConstraints();
+
+        // 设置左边的 PlayerView，占 3 宽度和 3 高度
+        PlayerView playerView = new PlayerView(player);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 3;
+        gbc.gridheight = 3;
+        gbc.weightx = 0.3;
+        gbc.weighty = 1.0;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.insets = new Insets(5, 5, 5, 5);
+        add(playerView, gbc);
+
+        // 设置右边的面板，占 2 宽度和 1 高度
+        JPanel controlPanel = new JPanel(new GridBagLayout());
+        controlPanel.setBackground(new Color(34, 139, 34));
+        GridBagConstraints rightGbc = new GridBagConstraints();
+        
+        rightGbc.gridx = 0;
+        rightGbc.gridy = 0;
+        rightGbc.gridwidth = 2;
+        rightGbc.insets = new Insets(10, 10, 10, 10);
+        rightGbc.anchor = GridBagConstraints.WEST;
+        // 添加 Raise Amount Label
+        JLabel raiseAmountLabel = new JLabel("Raise Amount:");
+        raiseAmountLabel.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
+        raiseAmountLabel.setForeground(new Color(255, 215, 0));
+        controlPanel.add(raiseAmountLabel, rightGbc);
+
+        // 添加 Raise Amount TextArea
+        rightGbc.gridx = 1;
+        rightGbc.anchor = GridBagConstraints.CENTER;
+        raiseAmountField = new JTextField(10);
+        raiseAmountField.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
+        raiseAmountField.setForeground(new Color(255, 215, 0));
+        raiseAmountField.setBackground(new Color(255, 255, 224));
+        controlPanel.add(raiseAmountField, rightGbc);
+
+        rightGbc.gridx = 0;
+        rightGbc.gridy = 1;
+        rightGbc.gridwidth = 2;
+        rightGbc.weightx = 1.0;
+        JPanel buttonsPanel = new JPanel(new GridLayout(1, 3, 10, 10));
+        buttonsPanel.setBackground(new Color(34, 139, 34));
+
+        foldButton = new Button("Fold", "normal");
+        buttonsPanel.add(foldButton);
+
+        callButton = new Button("Call", "normal");
+        buttonsPanel.add(callButton);
+
+        raiseButton = new Button("Raise", "normal");
+        buttonsPanel.add(raiseButton);
+
+        controlPanel.add(buttonsPanel, rightGbc);
+
+        gbc.gridx = 3;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        gbc.gridheight = 1;
+        gbc.weightx = 0.2;
+        gbc.weighty = 0.0;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.insets = new Insets(5, 5, 5, 5);
+        add(controlPanel, gbc);
     }
 }
