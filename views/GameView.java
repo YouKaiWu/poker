@@ -4,8 +4,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.URI;
+
+import javax.websocket.*;
+
 import models.*;
 
+@ClientEndpoint
 public class GameView extends JPanel {
     private HorizontalDeckView playerHandCenter;
     private HorizontalDeckView playerHandLeft;
@@ -23,6 +29,10 @@ public class GameView extends JPanel {
     private JButton foldButton;
     private JButton dealButton;
     private int pot;
+
+    private Session session;
+    public String roomID = "";
+    public boolean started = false;
 
     public GameView(MainView mainView) {
         this.setLayout(new BorderLayout());
@@ -142,6 +152,13 @@ public class GameView extends JPanel {
                 handleFold();
             }
         });
+
+        String uri = "ws://localhost:8080";
+        try {
+            ContainerProvider.getWebSocketContainer().connectToServer(this, new URI(uri));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void dealCards() {
@@ -160,8 +177,8 @@ public class GameView extends JPanel {
     private Deck createPlayerDeck() {
         // 創建樣例玩家撲克牌（兩張牌）
         Deck deck = new Deck(new Card[] {
-            new Card(Card.Suit.SPADE, 2),
-            new Card(Card.Suit.HEART, 3)
+                new Card(Card.Suit.SPADE, 2),
+                new Card(Card.Suit.HEART, 3)
         });
         return deck;
     }
@@ -169,11 +186,11 @@ public class GameView extends JPanel {
     private Deck createSampleCommunityDeck() {
         // 創建樣例公共撲克牌
         Deck deck = new Deck(new Card[] {
-            new Card(Card.Suit.SPADE, 6),
-            new Card(Card.Suit.HEART, 7),
-            new Card(Card.Suit.DIAMOND, 8),
-            new Card(Card.Suit.CLUB, 9),
-            new Card(Card.Suit.SPADE, 10)
+                new Card(Card.Suit.SPADE, 6),
+                new Card(Card.Suit.HEART, 7),
+                new Card(Card.Suit.DIAMOND, 8),
+                new Card(Card.Suit.CLUB, 9),
+                new Card(Card.Suit.SPADE, 10)
         });
         return deck;
     }
@@ -203,17 +220,64 @@ public class GameView extends JPanel {
     }
 
     private void handleRaise() {
+        String format = "{\"id\": \"%s\", \"type\":\"action\", \"action\": \"%s\"}";
+        String message = String.format(format, roomID, "raise");
+        send(message);
+
         // 處理加注邏輯
         JOptionPane.showMessageDialog(this, "Raise button clicked!");
     }
 
     private void handleCheck() {
+        String format = "{\"id\": \"%s\", \"type\":\"action\", \"action\": \"%s\"}";
+        String message = String.format(format, roomID, "check");
+        send(message);
+
         // 處理過牌邏輯
         JOptionPane.showMessageDialog(this, "Check button clicked!");
     }
 
     private void handleFold() {
+        String format = "{\"id\": \"%s\", \"type\":\"action\", \"action\": \"%s\"}";
+        String message = String.format(format, roomID, "fold");
+        send(message);
+
         // 處理棄牌邏輯
         JOptionPane.showMessageDialog(this, "Fold button clicked!");
+    }
+
+    @OnOpen
+    public void onOpen(Session session) {
+        this.session = session;
+        System.out.println("Connected to the server");
+    }
+
+    @OnMessage
+    public void onMessage(String message) {
+        System.out.println("Received from server: \n\t" + message);
+    }
+
+    @OnClose
+    public void onClose(Session session, CloseReason closeReason) {
+        System.out.println("Session closed: " + closeReason);
+    }
+
+    @OnError
+    public void onError(Session session, Throwable throwable) {
+        throwable.printStackTrace();
+    }
+
+    void send(String text) {
+        try {
+            session.getBasicRemote().sendText(text);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setRoom(String id) {
+        roomID = id;
+        String message = String.format("{\"id\": \"%s\", \"type\":\"join\"}", id);
+        send(message);
     }
 }

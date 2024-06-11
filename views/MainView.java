@@ -8,6 +8,7 @@ import utility.*;
 public class MainView extends JPanel {
     public Client client;
     public JFrame frame;
+    GameView game;
 
     public MainView(JFrame frame, Client client) {
         this.client = client;
@@ -23,12 +24,17 @@ public class MainView extends JPanel {
         JPanel register = new RegisterView(this);
         this.add(register, "register");
 
-        JPanel game = new GameView(this);
+        game = new GameView(this);
         this.add(game, "game");
     }
 
     public void switchPanel(String panelName) {
         CardLayout cardLayout = (CardLayout) this.getLayout();
         cardLayout.show(this, panelName);
+    }
+
+    public void setRoom(String id) {
+        game.setRoom(id);
+        game.started = false;
     }
 }

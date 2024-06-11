@@ -5,8 +5,6 @@ import models.*;
 
 public class Client {
     private String token = "";
-    public String roomID = "";
-    public boolean gameStart = false;
 
     public boolean login(String account, String password) {
         String format = "{\"account\": \"%s\",\"password\": \"%s\"}";
